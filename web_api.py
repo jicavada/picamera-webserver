@@ -4,7 +4,7 @@ import threading
 import time
 import cv2
 from frame import Frame
-from flask import Flask, request, render_template, Response
+from flask import Flask, request, render_template, Response, jsonify
 
 class WebAPI(object):
     def __init__(self, app, cameras):
@@ -13,6 +13,7 @@ class WebAPI(object):
         self.app.add_url_rule('/', endpoint='index', view_func=self.index)
         self.app.add_url_rule('/cameras/<int:index>', endpoint='camera_feed', view_func=self.camera_feed)
         self.app.add_url_rule('/cameras_raw/<int:index>', endpoint='camera_feed_raw', view_func=self.camera_feed_raw)
+        self.app.add_url_rule('/detected_raw/<int:index>', endpoint='detected_raw', view_func=self.detected_raw)
         self.app.add_url_rule('/<path:path>', endpoint='unknown', view_func=self.unknown)
 
     def index(self):
@@ -26,6 +27,12 @@ class WebAPI(object):
             return render_template('404.html'), 404
 
         return render_template('camera_feed.html', index=index)
+
+    def detected_raw(self, index):
+        if index == 0 or index > len(self.cameras):
+            return render_template('404.html'), 404
+
+        return jsonify(pir_detected=self.cameras[index - 1].detected())
 
     def __gen_camera_feed(self, camera):
         while True:
