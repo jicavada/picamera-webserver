@@ -27,9 +27,16 @@ class WebAPI(object):
 
         return render_template('camera_feed.html', index=index)
 
-    def __gen(self, camera):
+    def __gen_camera_feed(self, camera):
         while True:
-            frame = cv2.imencode(".jpeg", camera.frame().frame, (cv2.IMWRITE_JPEG_QUALITY,80))[1]
+            img = camera.frame().frame
+            bordersize = 5
+            if camera.detected():
+                color = [0, 255, 0]
+            else:
+                color = [0, 0, 0]
+            frame = cv2.copyMakeBorder(img, bordersize, bordersize, bordersize, bordersize, cv2.BORDER_CONSTANT, value=color)
+            frame = cv2.imencode(".jpeg", frame, (cv2.IMWRITE_JPEG_QUALITY,80))[1]
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame.tostring() + b'\r\n')
 
@@ -37,5 +44,5 @@ class WebAPI(object):
         if index == 0 or index > len(self.cameras):
             return render_template('404.html'), 404
 
-        return Response(self.__gen(self.cameras[index - 1]),
+        return Response(self.__gen_camera_feed(self.cameras[index - 1]),
                         mimetype='multipart/x-mixed-replace; boundary=frame')
