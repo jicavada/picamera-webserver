@@ -9,6 +9,7 @@ class RemoteCamera(object):
     def __init__(self, address):
         self.uri_string = "PYRO:core_server@{0}".format(address)
         self.current_frame = None
+        self.pir_detected = False
 
     def start(self):
         self.can_run = True
@@ -24,6 +25,9 @@ class RemoteCamera(object):
     def frame(self):
         return self.current_frame
 
+    def detected(self):
+        return self.pir_detected
+
     def on_read_frames(self):
         print "{0} starting".format(self.uri_string)
         last_timestamp = time.time()
@@ -35,6 +39,7 @@ class RemoteCamera(object):
             except Pyro4.errors.ConnectionClosedError:
                 print "{0} reconnecting".format(self.uri_string)
                 camera._pyroReconnect()
+            self.pir_detected = camera.get_pir_state()
 
             now_timestamp = time.time()
             diff = now_timestamp - last_timestamp
