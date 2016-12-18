@@ -2,5 +2,5 @@
 {% block title %}Index{% endblock %}
 {% block content %}
   <h1>PiCamera {{ index }} </h1>
-  <img src="{{ url_for('camera_feed_raw', index=index) }}">
+  <img src="{{ url_for('camera_feed_raw', index=index) }}" />
 {% endblock %}
