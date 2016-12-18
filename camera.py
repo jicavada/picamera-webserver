@@ -8,6 +8,7 @@ from frame import Frame
 class RemoteCamera(object):
     def __init__(self, address):
         self.uri_string = "PYRO:core_server@{0}".format(address)
+        self.current_frame = None
 
     def start(self):
         self.can_run = True
@@ -20,6 +21,9 @@ class RemoteCamera(object):
         self.can_run = False
         self.stopped.wait(timeout)
 
+    def frame(self):
+        return self.current_frame
+
     def on_read_frames(self):
         print "{0} starting".format(self.uri_string)
         last_timestamp = time.time()
@@ -27,7 +31,7 @@ class RemoteCamera(object):
 
         while self.can_run:
             try:
-                frame = camera.get_frame()
+                self.current_frame = camera.get_frame()
             except Pyro4.errors.ConnectionClosedError:
                 print "{0} reconnecting".format(self.uri_string)
                 camera._pyroReconnect()
@@ -36,7 +40,7 @@ class RemoteCamera(object):
             diff = now_timestamp - last_timestamp
             last_timestamp = now_timestamp
             fps = 1 / diff
-            print "{0} network fps: {1:.2f} | camera fps: {2:.2f}".format(self.uri_string, fps, frame.fps)
+            print "{0} network fps: {1:.2f} | camera fps: {2:.2f}".format(self.uri_string, fps, self.current_frame.fps)
 
         print "{0} stopping".format(self.uri_string)
         self.stopped.set()
