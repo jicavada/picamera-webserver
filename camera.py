@@ -39,6 +39,7 @@ class RemoteCamera(object):
             except Pyro4.errors.ConnectionClosedError:
                 print "{0} reconnecting".format(self.uri_string)
                 camera._pyroReconnect()
+                continue
             self.pir_detected = camera.get_pir_state()
 
             now_timestamp = time.time()
