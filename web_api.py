@@ -13,6 +13,7 @@ class WebAPI(object):
         self.app.add_url_rule('/', endpoint='index', view_func=self.index)
         self.app.add_url_rule('/cameras/<int:index>', endpoint='camera_feed', view_func=self.camera_feed)
         self.app.add_url_rule('/cameras_raw/<int:index>', endpoint='camera_feed_raw', view_func=self.camera_feed_raw)
+        self.app.add_url_rule('/cameras_all', endpoint='camera_feed_all', view_func=self.camera_feed_all)
         self.app.add_url_rule('/detected_raw/<int:index>', endpoint='detected_raw', view_func=self.detected_raw)
         self.app.add_url_rule('/<path:path>', endpoint='unknown', view_func=self.unknown)
 
@@ -27,6 +28,9 @@ class WebAPI(object):
             return render_template('404.html'), 404
 
         return render_template('camera_feed.html', index=index)
+
+    def camera_feed_all(self):
+        return render_template('camera_feed_all.html', cameras=self.cameras)
 
     def detected_raw(self, index):
         if index == 0 or index > len(self.cameras):

@@ -2,6 +2,7 @@
 {% block title %}Index{% endblock %}
 {% block content %}
   <h1>PiCamera System</h1>
+  <a href="{{ url_for('camera_feed_all') }}" class="button">All</a>
   {% for cam in cameras %}
       <a href="{{ url_for('camera_feed', index=loop.index) }}" class="button">Camera {{ loop.index }}</a>
   {% endfor %}
