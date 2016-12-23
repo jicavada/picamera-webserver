@@ -2,8 +2,21 @@
 {% block title %}Index{% endblock %}
 {% block content %}
   <h1>PiCamera System</h1>
-  <a href="{{ url_for('camera_feed_all') }}" class="button">All</a>
-  {% for cam in cameras %}
-      <a href="{{ url_for('camera_feed', index=loop.index) }}" class="button">Camera {{ loop.index }}</a>
-  {% endfor %}
+  <div id="previewWrap">
+    <div class="previewGrid">
+      {% for cam in cameras %}
+        <div class="previewContainer">
+          <img src="{{ url_for('camera_feed_raw', index=loop.index) }}">
+          <div class="previewCaption">
+              <a href="{{ url_for('camera_feed', index=loop.index) }}">{{ loop.index }}</a>
+          </div>
+        </div>
+      {% endfor %}
+      <div class="previewContainer">
+        <div class="previewCaption">
+          <a href="{{ url_for('camera_feed_all') }}">All</a>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock %}
