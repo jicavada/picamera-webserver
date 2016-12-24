@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
-{% block title %}Index{% endblock %}
+{% block title %}{{ cam.name }}{% endblock %}
 {% block content %}
-  <h1>PiCamera {{ index }} </h1>
+  <h1>{{ cam.name }} </h1>
   <img src="{{ url_for('camera_feed_raw', index=index) }}" />
 {% endblock %}

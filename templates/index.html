@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% block title %}Index{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 {% block content %}
   <h1>PiCamera System</h1>
   <div id="previewWrap">
@@ -8,7 +8,7 @@
         <div class="previewContainer">
           <img src="{{ url_for('camera_feed_raw', index=loop.index) }}">
           <div class="previewCaption">
-              <a href="{{ url_for('camera_feed', index=loop.index) }}">{{ loop.index }}</a>
+              <a href="{{ url_for('camera_feed', index=loop.index) }}">{{ cam.name }}</a>
           </div>
         </div>
       {% endfor %}

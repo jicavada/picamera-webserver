@@ -6,8 +6,9 @@ import Pyro4
 from frame import Frame
 
 class RemoteCamera(object):
-    def __init__(self, address):
-        self.uri_string = "PYRO:core_server@{0}".format(address)
+    def __init__(self, name, address, port):
+        self.name = name
+        self.uri_string = "PYRO:core_server@{0}:{1}".format(address, port)
         self.current_frame = None
         self.pir_detected = False
 

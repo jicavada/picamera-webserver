@@ -7,9 +7,10 @@ from frame import Frame
 from flask import Flask, request, render_template, Response, jsonify
 
 class WebAPI(object):
-    def __init__(self, app, cameras):
+    def __init__(self, app, cameras, title):
         self.app = app
         self.cameras = cameras
+        self.title = title
         self.app.add_url_rule('/', endpoint='index', view_func=self.index)
         self.app.add_url_rule('/cameras/<int:index>', endpoint='camera_feed', view_func=self.camera_feed)
         self.app.add_url_rule('/cameras_raw/<int:index>', endpoint='camera_feed_raw', view_func=self.camera_feed_raw)
@@ -18,7 +19,7 @@ class WebAPI(object):
         self.app.add_url_rule('/<path:path>', endpoint='unknown', view_func=self.unknown)
 
     def index(self):
-        return render_template('index.html', cameras=self.cameras)
+        return render_template('index.html', cameras=self.cameras, title=self.title)
 
     def unknown(self, path):
         return render_template('404.html'), 404
@@ -27,7 +28,7 @@ class WebAPI(object):
         if index == 0 or index > len(self.cameras):
             return render_template('404.html'), 404
 
-        return render_template('camera_feed.html', index=index)
+        return render_template('camera_feed.html', index=index, cam=self.cameras[index])
 
     def camera_feed_all(self):
         return render_template('camera_feed_all.html', cameras=self.cameras)

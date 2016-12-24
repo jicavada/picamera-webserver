@@ -1,0 +1,11 @@
+cameras:
+    - name: "Living room"
+      address: 127.0.0.1
+      port: 2222
+    - name: "Front door Hello Dude Whats up Hows it going my name is chris"
+      address: 127.0.0.1
+      port: 2222
+webserver:
+    title: "My Camera System"
+    address: 0.0.0.0
+    port: 8081

@@ -53,6 +53,9 @@
     font: 24px/1 Arial, sans-serif; /* Reset the font property */
     display: inline-block;
     vertical-align: middle;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     text-align:center;
     width: 100%;
     padding: 1% 0;
