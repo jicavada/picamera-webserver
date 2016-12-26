@@ -9,3 +9,7 @@ webserver:
     title: "My Camera System"
     address: 0.0.0.0
     port: 8081
+recording:
+    path: "/home/pi/videos"
+    predetect_time: 10
+    postdetect_time: 10

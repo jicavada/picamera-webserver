@@ -8,6 +8,7 @@ from camera import RemoteCamera
 from web_api import WebAPI
 from flask import Flask
 import yaml
+import os
 
 can_run = True
 cameras = []
@@ -23,11 +24,16 @@ def on_run(args):
         except yaml.YAMLError as exc:
             print exc
 
+    recording_config = config['recording']
+    rec_path = recording_config['path']
+    predetect_time = recording_config['predetect_time']
+    postdetect_time = recording_config['postdetect_time']
+
     for camera in config['cameras']:
         addr = camera['address']
         name = camera['name']
         port = camera['port']
-        cam = RemoteCamera(name, addr, port)
+        cam = RemoteCamera(name, addr, port, rec_path, predetect_time, postdetect_time)
         cam.start()
         cameras.append(cam)
 
