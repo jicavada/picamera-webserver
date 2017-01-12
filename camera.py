@@ -3,17 +3,46 @@
 import threading
 import time
 import Pyro4
+import os
+import os.path
 from frame import Frame
-from video import VideoBuffer
+from video import VideoBuffer, VideoPreviewGenerator, VideoProperties
+
+class Recording(object):
+    def __init__(self, path):
+        self.path = path
+        self.directory = os.path.dirname(path)
+        self.filename = os.path.basename(path)
+        self.name, self.ext = os.path.splitext(self.filename)
+        self.preview_paths = []
+
+    def generate_previews(self, num):
+        try:
+            gen = VideoPreviewGenerator(self.path)
+        except OSError as e:
+            print(e)
+            return
+        self.preview_paths = gen.equidistant_previews(num)
 
 class RemoteCamera(object):
-    def __init__(self, name, address, port, rec_path, predetect_time, postdetect_time):
+    def __init__(self, name, address, port, rec_path, predetect_time, postdetect_time, preview_frame_count):
         self.name = name
         self.uri_string = "PYRO:core_server@{0}:{1}".format(address, port)
         self.current_frame = None
         self.pir_detected = False
         self.force_record = False
+        self.preview_frame_count = preview_frame_count
         self.video_buffer = VideoBuffer(name, rec_path, predetect_time, postdetect_time)
+        self.recordings = {}
+        for f in os.listdir(self.video_buffer.base_path):
+            p = os.path.join(self.video_buffer.base_path, f)
+            if VideoProperties.exists(p):
+                print 'Recording loaded: {0}'.format(p)
+                rec = Recording(p)
+                rec.generate_previews(4)
+                self.recordings[rec.name] = rec
+            elif p.endswith(self.video_buffer.video_extension):
+                print 'Recording ignored due to missing properties: {0}'.format(p)
 
     def start(self):
         self.can_run = True
@@ -61,7 +90,11 @@ class RemoteCamera(object):
             real_fps = self.current_frame.real_fps
 
             record = self.pir_detected or self.force_record
-            self.video_buffer.add_frame(self.current_frame, record)
+            generated_video = self.video_buffer.add_frame(self.current_frame, record)
+            if generated_video:
+                rec = Recording(generated_video)
+                self.recordings[rec.name] = rec
+                rec.generate_previews(self.self.preview_frame_count)
 
             now_timestamp = time.time()
             diff = now_timestamp - last_timestamp

@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+{% block title %}Recordings{% endblock %}
+{% block content %}
+  {% for cam in cameras %}
+    {% set index = loop.index %}
+    <h1>{{ cam.name }}</h1>
+    <div id="previewWrap">
+      <div class="previewGrid">
+        {% for key, value in cam.recordings.items() %}
+          <div class="previewContainer">
+            <img src="{{ url_for('rec_preview_raw', index=index, name=value.name) }}">
+            <div class="recPreviewCaption">
+                <a href="{{ url_for('rec_download', index=index, name=value.name) }}">{{ value.name }}</a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endfor %}
+{% endblock %}

@@ -43,6 +43,50 @@ class VideoProperties(object):
         with open(path, 'wb') as f:
             pickle.dump(self, f)
 
+class VideoPreviewGenerator(object):
+    def __init__(self, path):
+        self.video_path = path
+        self.preview_path = VideoPreviewGenerator.path(path)
+        if not os.path.exists(self.preview_path):
+            os.makedirs(self.preview_path)
+
+        self.props = VideoProperties.load(self.video_path)
+        self.cap = cv2.VideoCapture(self.video_path)
+
+    @staticmethod
+    def path(path):
+        return path + ".preview"
+
+    @property
+    def frame_count(self):
+        return self.props.total_frame_count
+
+    def equidistant_previews(self, num):
+        if num <= 0:
+            return []
+
+        spacing = self.frame_count / num
+        indexes = []
+        for index in range(0, self.frame_count, spacing):
+            indexes.append(index)
+
+        return self.previews(indexes)
+
+    def previews(self, indexes=[]):
+        paths = []
+        for index in range(0, self.frame_count):
+            success, image = self.cap.read()
+            if not success:
+                break
+
+            if index in indexes:
+                preview_path = os.path.join(self.preview_path, "{0}.jpeg".format(index))
+                if not os.path.exists(preview_path):
+                    cv2.imwrite(preview_path, image, [int(cv2.IMWRITE_JPEG_QUALITY), 90])
+                paths.append(preview_path)
+
+        return paths
+
 class VideoBuffer(object):
     def __init__(self, name, path, predetect_time, postdetect_time):
         video_format = 'XVID'
@@ -87,6 +131,7 @@ class VideoBuffer(object):
         self.props.yres = current_frame.yres
         self.props.pre_num_frames = int(self.predetect_time * self.props.real_fps)
         self.props.post_num_frames = int(self.postdetect_time * self.props.real_fps)
+        generated_video = ''
 
         if not self.recording and record:
             self.props.video_path = self.__build_path()
@@ -118,3 +163,5 @@ class VideoBuffer(object):
             for count in range(self.props.pre_num_frames, len(self.frame_stack)):
                 print "Rec pop {0}: {1}".format(self.props.pre_num_frames, len(self.frame_stack))
                 self.frame_stack.pop()
+
+        return generated_video

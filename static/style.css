@@ -61,6 +61,44 @@
     padding: 1% 0;
 }
 
+.recPreviewCaption {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    font: 0/0 a; /* remove the gap between inline(-block) elements */
+    background: rgba(255, 255, 255, 0.00);
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -ms-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+.recPreviewCaption:before {
+    content: ' ';
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+}
+
+.recPeviewCaption:hover {
+    background: rgba(255, 255, 255, 0.00);
+}
+
+.recPreviewCaption a {
+    color: white;
+    font: 2vmin/1 Arial, sans-serif; /* Reset the font property */
+    display: inline-block;
+    vertical-align: middle;
+    overflow: hidden;
+    white-space: nowrap;
+    text-align:center;
+    width: 100%;
+    padding: 1% 0;
+}
+
 h1, h2 {
     font-family: 'Georgia', serif;
     margin: 0;

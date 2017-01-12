@@ -28,12 +28,13 @@ def on_run(args):
     rec_path = recording_config['path']
     predetect_time = recording_config['predetect_time']
     postdetect_time = recording_config['postdetect_time']
+    preview_frame_count = recording_config['preview_frame_count']
 
     for camera in config['cameras']:
         addr = camera['address']
         name = camera['name']
         port = camera['port']
-        cam = RemoteCamera(name, addr, port, rec_path, predetect_time, postdetect_time)
+        cam = RemoteCamera(name, addr, port, rec_path, predetect_time, postdetect_time, preview_frame_count)
         cam.start()
         cameras.append(cam)
 
