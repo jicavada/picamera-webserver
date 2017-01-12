@@ -30,6 +30,13 @@ class WebAPI(object):
 
         return render_template('camera_feed.html', index=index, cam=self.cameras[index])
 
+    def camera_feed_raw(self, index):
+        if index == 0 or index > len(self.cameras):
+            return render_template('404.html'), 404
+
+        return Response(self.__gen_camera_feed(self.cameras[index - 1]),
+                        mimetype='multipart/x-mixed-replace; boundary=frame')
+
     def camera_feed_all(self):
         return render_template('camera_feed_all.html', cameras=self.cameras)
 
