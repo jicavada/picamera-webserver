@@ -54,7 +54,7 @@ body {
 }
 
 .previewCaption a {
-    font: 24px/1 Arial, sans-serif; /* Reset the font property */
+    font: 24px/1 Lato, sans-serif; /* Reset the font property */
     display: inline-block;
     vertical-align: middle;
     overflow: hidden;
@@ -93,7 +93,7 @@ body {
 
 .recPreviewCaption a {
     color: white;
-    font: 2vmin/1 Arial, sans-serif; /* Reset the font property */
+    font: 2vmin/1 Lato, sans-serif; /* Reset the font property */
     display: inline-block;
     vertical-align: middle;
     overflow: hidden;
@@ -157,7 +157,7 @@ body {
 }
 
 h1, h2 {
-    font-family: 'Georgia', serif;
+    font-family: 'Lato', sans-serif;
     margin: 0;
 }
 h1 {
