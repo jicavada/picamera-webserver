@@ -5,6 +5,10 @@ import time
 import Pyro4
 import os
 import os.path
+import lz4
+import numpy
+import cv
+import cv2
 from frame import Frame
 from video import VideoBuffer, VideoPreviewGenerator, VideoProperties
 
@@ -75,7 +79,7 @@ class RemoteCamera(object):
 
         while self.can_run:
             try:
-                self.current_frame = camera.get_frame()
+                frame = camera.get_frame()
             except Pyro4.errors.ConnectionClosedError:
                 print "{0} reconnecting".format(self.uri_string)
                 camera._pyroReconnect()
@@ -85,11 +89,35 @@ class RemoteCamera(object):
                 camera._pyroReconnect()
                 continue
 
+            if frame.format == "str_lz4":
+                frame_data = lz4.decompress(frame.frame)
+                array = numpy.fromstring(frame_data, dtype='uint8')
+                mat = cv.CreateMat(frame.yres, frame.xres, cv.CV_8UC3)
+                cv.SetData(mat, frame_data)
+                frame.frame = numpy.asarray(mat)
+            elif frame.format == "str_jpeg":
+                array = numpy.fromstring(frame.frame, dtype='uint8')
+                frame_data = cv2.imdecode(array, cv2.IMREAD_UNCHANGED)
+                mat = cv.CreateMat(frame.yres, frame.xres, cv.CV_8UC3)
+                cv.SetData(mat, frame_data)
+                frame.frame = numpy.asarray(mat)
+            elif frame.format == "str_none":
+                array = numpy.fromstring(frame.frame, dtype='uint8')
+                mat = cv.CreateMat(frame.yres, frame.xres, cv.CV_8UC3)
+                cv.SetData(mat, array)
+                frame.frame = numpy.asarray(mat)
+            else:
+                print "Unknown frame format: {0}".format(frame.format)
+                continue
+
+            self.current_frame = frame
+
+            # Need to override frame in frame for video buffer to work
             self.pir_detected = camera.get_pir_state()
             ideal_fps = self.current_frame.ideal_fps
             real_fps = self.current_frame.real_fps
 
-            record = self.pir_detected or self.force_record
+            record = self.pir_detected or self.force_record or True
             generated_video = self.video_buffer.add_frame(self.current_frame, record)
             if generated_video:
                 rec = Recording(generated_video)
